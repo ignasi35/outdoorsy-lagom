@@ -7,6 +7,7 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
 import com.marimon.excursions.Excursion;
+import com.marimon.excursions.ExcursionId;
 import lombok.Data;
 
 import java.util.Optional;
@@ -16,12 +17,12 @@ public interface ExcursionCommand extends Jsonable {
 
 
   @SuppressWarnings("serial")
-  @Data
   @JsonDeserialize
+  @Data
   public final class ScheduleExcursion
       implements ExcursionCommand,
       CompressedJsonable,
-      PersistentEntity.ReplyType<Done> {
+      PersistentEntity.ReplyType<ExcursionId> {
     public final String location;
     public final String isoDate;
 
@@ -39,10 +40,7 @@ public interface ExcursionCommand extends Jsonable {
       CompressedJsonable,
       PersistentEntity.ReplyType<Optional<Excursion>> {
 
-    private final UUID id;
-
-    public LoadExcursion(UUID id) {
-      this.id = id;
+    public LoadExcursion() {
     }
   }
 

@@ -19,7 +19,8 @@ lazy val excursionsImpl = project("excursions-impl")
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
-      lagomJavadslTestKit
+      lagomJavadslTestKit,
+      lagomLogback
     )
   )
   .settings(lagomForkedTestSettings: _*)

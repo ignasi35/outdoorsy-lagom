@@ -1,19 +1,20 @@
 package com.marimon.excursions;
 
-import akka.Done;
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
+import java.util.Optional;
+
 import static com.lightbend.lagom.javadsl.api.Service.*;
 
 
 public interface ExcursionsService extends Service {
-  ServiceCall<ScheduleExcursion, Done> scheduleExcursion();
+  ServiceCall<ScheduleExcursion, ExcursionId> scheduleExcursion();
 
-  ServiceCall<NotUsed, Excursion> loadExcursion();
+  ServiceCall<NotUsed, Optional<Excursion>> loadExcursion(String id);
 
   @Override
   default Descriptor descriptor() {

@@ -3,6 +3,7 @@ package com.marimon.excursions.impl;
 import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.marimon.excursions.Excursion;
+import com.marimon.excursions.ExcursionId;
 import com.marimon.excursions.ExcursionStatus;
 import com.marimon.excursions.impl.ExcursionCommand.*;
 import com.marimon.excursions.impl.ExcursionEvent.*;
@@ -35,9 +36,10 @@ public class ExcursionEntity extends PersistentEntity<ExcursionCommand, Excursio
         ScheduleExcursion.class,
         (cmd, ctx) -> {
           Excursion excursion = new Excursion(cmd.location, cmd.isoDate, ExcursionStatus.SCHEDULED);
+          UUID id = entityUuid();
           return ctx.thenPersist(
-              new ExcursionScheduled(entityUuid(), excursion),
-              evt -> ctx.reply(Done.getInstance()));
+              new ExcursionScheduled(id, excursion),
+              evt -> ctx.reply(new ExcursionId(id.toString())));
         });
 
     b.setEventHandlerChangingBehavior(ExcursionScheduled.class, evt ->

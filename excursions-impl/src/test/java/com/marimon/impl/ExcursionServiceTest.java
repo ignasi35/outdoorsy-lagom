@@ -1,20 +1,23 @@
 package com.marimon.impl;
 
-import static com.lightbend.lagom.javadsl.testkit.ServiceTest.*;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
+import akka.Done;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import com.marimon.excursions.Excursion;
+import com.marimon.excursions.ExcursionId;
 import com.marimon.excursions.ExcursionsService;
 import com.marimon.excursions.ScheduleExcursion;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.assertEquals;
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.startServer;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.*;
 
 public class ExcursionServiceTest {
 
@@ -23,7 +26,10 @@ public class ExcursionServiceTest {
 
   @BeforeClass
   public static void setUp() {
-    server = startServer(defaultSetup().withCluster(false));
+    server = startServer(
+        defaultSetup()
+            .withCassandra(true)
+    );
   }
 
   @AfterClass
@@ -37,17 +43,17 @@ public class ExcursionServiceTest {
   @Test
   public void shouldStoreScheduledExcursionsUsingConcatLocationDateAsName() throws InterruptedException, ExecutionException, TimeoutException {
     ExcursionsService service = server.client(ExcursionsService.class);
-    // TODO: scheduling is only allowed in the future. To Log an
-    // excursion in the past use LogExcursion Ops
-    String location = "Aiguablava";
+
+    String location = "Ha Long Bay";
     String isoDate = "2016-10-29";
     ScheduleExcursion excRequest = new ScheduleExcursion(location, isoDate);
 
-    service.scheduleExcursion().invoke(excRequest).toCompletableFuture().get(5, SECONDS);
+    ExcursionId excursionId = service.scheduleExcursion().invoke(excRequest).toCompletableFuture().get(5, SECONDS);
 
-    Excursion excursion = service.loadExcursion().invoke().toCompletableFuture().get(5, SECONDS);
-    assertEquals(isoDate, excursion.getIsoDate());
-    assertEquals(location, excursion.getLocation());
+    Optional<Excursion> excursion = service.loadExcursion(excursionId.getId()).invoke().toCompletableFuture().get(5, SECONDS);
+    assertTrue(excursion.isPresent());
+    assertEquals(isoDate, excursion.get().getIsoDate());
+    assertEquals(location, excursion.get().getLocation());
 
   }
 
