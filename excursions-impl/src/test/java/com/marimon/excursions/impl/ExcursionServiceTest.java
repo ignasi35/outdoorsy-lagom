@@ -1,4 +1,4 @@
-package com.marimon.impl;
+package com.marimon.excursions.impl;
 
 import akka.Done;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
@@ -41,7 +41,7 @@ public class ExcursionServiceTest {
   }
 
   @Test
-  public void shouldStoreScheduledExcursionsUsingConcatLocationDateAsName() throws InterruptedException, ExecutionException, TimeoutException {
+  public void shouldStoreScheduledExcursionsUsingConcatLocationDateAsName() throws Exception {
     ExcursionsService service = server.client(ExcursionsService.class);
 
     String location = "Ha Long Bay";

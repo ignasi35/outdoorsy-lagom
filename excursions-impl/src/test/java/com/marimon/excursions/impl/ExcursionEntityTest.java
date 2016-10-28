@@ -1,4 +1,4 @@
-package com.marimon.impl;
+package com.marimon.excursions.impl;
 
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;

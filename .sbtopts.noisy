@@ -1,0 +1,7 @@
+-J-XX:MaxNewSize=128M
+-J-XX:+UseCompressedOops
+-J-verbose:gc
+-J-XX:+PrintGCDetails
+-J-Xmx4096M
+-J-Xss2M
+-J-XX:MaxMetaspaceSize=1024M
