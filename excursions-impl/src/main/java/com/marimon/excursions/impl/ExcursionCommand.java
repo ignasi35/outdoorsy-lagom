@@ -9,8 +9,6 @@ import com.marimon.excursions.Excursion;
 import com.marimon.excursions.ExcursionId;
 import lombok.Data;
 
-import java.util.Optional;
-
 public interface ExcursionCommand extends Jsonable {
 
 
@@ -36,7 +34,7 @@ public interface ExcursionCommand extends Jsonable {
   public final class LoadExcursion
       implements ExcursionCommand,
       CompressedJsonable,
-      PersistentEntity.ReplyType<Optional<Excursion>> {
+      PersistentEntity.ReplyType<Excursion> {
 
     public LoadExcursion() {
     }

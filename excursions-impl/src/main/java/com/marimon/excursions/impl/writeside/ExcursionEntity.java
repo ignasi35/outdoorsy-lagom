@@ -4,6 +4,7 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.marimon.excursions.Excursion;
 import com.marimon.excursions.ExcursionId;
 import com.marimon.excursions.ExcursionStatus;
+import com.marimon.excursions.FailedReturns;
 import com.marimon.excursions.impl.ExcursionCommand;
 import com.marimon.excursions.impl.ExcursionCommand.LoadExcursion;
 import com.marimon.excursions.impl.ExcursionCommand.ScheduleExcursion;
@@ -59,8 +60,8 @@ public class ExcursionEntity extends PersistentEntity<ExcursionCommand, Excursio
 
   // ----------------------------------------------------------------------------------------------------
 
-  private void getItem(LoadExcursion cmd, ReadOnlyCommandContext<Optional<Excursion>> ctx) {
-    ctx.reply(state().getExcursion());
+  private void getItem(LoadExcursion cmd, ReadOnlyCommandContext<Excursion> ctx) {
+    ctx.reply(state().getExcursion().get());
   }
 
   private UUID entityUuid() {

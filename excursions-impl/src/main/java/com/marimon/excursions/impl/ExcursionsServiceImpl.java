@@ -19,9 +19,9 @@ import com.marimon.excursions.impl.writeside.ExcursionEntity;
 import org.pcollections.HashTreePMap;
 
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class ExcursionsServiceImpl implements ExcursionsService {
   private final PersistentEntityRegistry persistentEntities;
@@ -63,21 +63,23 @@ public class ExcursionsServiceImpl implements ExcursionsService {
   }
 
   @Override
-  public HeaderServiceCall<NotUsed, Optional<Excursion>> loadExcursion(String id) {
+  public HeaderServiceCall<NotUsed, Excursion> loadExcursion(String id) {
     // TODO: replace this error management with ExceptionHandler at service.
     return (request, notused) ->
         CompletableFuture
             .supplyAsync(() -> UUID.fromString(id))
-            .thenCompose(itemId -> entityRef(itemId).ask(new ExcursionCommand.LoadExcursion()).thenApply(exc -> Pair.create(ResponseHeader.OK, (Optional<Excursion>) exc))
-            ).exceptionally(t -> {
-              int status;
-              if (t instanceof PersistentEntity.UnhandledCommandException)
-                status = 404;
-              else
-                status = 400;
-              return Pair.create(new ResponseHeader(status, new MessageProtocol(), HashTreePMap.empty()), Optional.<Excursion>empty());
-            }
-        );
+            .thenCompose(itemId -> entityRef(itemId).ask(new ExcursionCommand.LoadExcursion()).thenApply(exc -> Pair.create(ResponseHeader.OK, (Excursion) exc)))
+            .handle((p, t) -> {
+                  if (t instanceof CompletionException) {
+                    if (t.getCause() instanceof PersistentEntity.UnhandledCommandException) {
+                      throw FailedReturns.ExcursionNotFound.apply(id);
+                    } else if (t.getCause() instanceof IllegalArgumentException) {
+                      throw FailedReturns.BadRequest_InvalidIdFormat.apply(id);
+                    }
+                  }
+                  return p;
+                }
+            );
   }
 
 

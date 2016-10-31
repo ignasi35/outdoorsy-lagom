@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface ExcursionEvent extends Jsonable, AggregateEvent<ExcursionEvent> {
 
-  int NUM_SHARDS = 2;
+  int NUM_SHARDS = 4;
 
   AggregateEventShards<ExcursionEvent> TAG =
       AggregateEventTag.sharded(ExcursionEvent.class, "ExcursionEventTagName", NUM_SHARDS);
