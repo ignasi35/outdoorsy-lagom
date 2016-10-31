@@ -1,7 +1,6 @@
 package com.marimon.excursions.impl;
 
 
-import akka.Done;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
@@ -11,7 +10,6 @@ import com.marimon.excursions.ExcursionId;
 import lombok.Data;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ExcursionCommand extends Jsonable {
 

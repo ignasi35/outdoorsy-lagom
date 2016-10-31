@@ -1,15 +1,13 @@
 package com.marimon.excursions;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.Data;
-
-@JsonDeserialize
 public final class Excursion {
   private final String location;
   private final String isoDate;
   private final ExcursionStatus status;
 
+  @JsonCreator
   public Excursion(String location, String isoDate, ExcursionStatus status) {
     this.location = location;
     this.isoDate = isoDate;

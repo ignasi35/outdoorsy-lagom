@@ -3,23 +3,16 @@ package com.marimon.excursions.impl;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver;
-import com.marimon.excursions.Excursion;
 import com.marimon.excursions.ExcursionStatus;
-import com.marimon.excursions.ExcursionsService;
-import com.marimon.excursions.ScheduleExcursion;
-import com.marimon.excursions.impl.ExcursionCommand;
-import com.marimon.excursions.impl.ExcursionEntity;
-import com.marimon.excursions.impl.ExcursionEvent;
-import com.marimon.excursions.impl.ExcursionState;
+import com.marimon.excursions.impl.writeside.ExcursionEvent;
+import com.marimon.excursions.impl.writeside.ExcursionEntity;
+import com.marimon.excursions.impl.writeside.ExcursionState;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
-import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 
 public class ExcursionEntityTest {

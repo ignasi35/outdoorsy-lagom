@@ -3,7 +3,6 @@ organization in ThisBuild := "com.marimon"
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.11.8"
 
-
 lazy val excursionsApi = project("excursions-api")
   .settings(
     version := "1.0-SNAPSHOT",
@@ -25,7 +24,6 @@ lazy val excursionsImpl = project("excursions-impl")
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(excursionsApi)
-
 
 def project(id: String) = Project(id, base = file(id))
   .settings(eclipseSettings: _*)
@@ -51,6 +49,5 @@ lazy val eclipseSettings = Seq(
   unmanagedSourceDirectories in Compile := Seq((javaSource in Compile).value),
   unmanagedSourceDirectories in Test := Seq((javaSource in Test).value)
 )
-
 
 fork in run := true

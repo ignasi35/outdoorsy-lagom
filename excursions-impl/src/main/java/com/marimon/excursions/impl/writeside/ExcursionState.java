@@ -1,4 +1,4 @@
-package com.marimon.excursions.impl;
+package com.marimon.excursions.impl.writeside;
 
 
 import com.marimon.excursions.Excursion;
@@ -29,4 +29,5 @@ public class ExcursionState {
   public Optional<Excursion> getExcursion() {
     return excursion;
   }
+
 }

@@ -1,16 +1,16 @@
-package com.marimon.excursions.impl;
+package com.marimon.excursions.impl.writeside;
 
-import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.marimon.excursions.Excursion;
 import com.marimon.excursions.ExcursionId;
 import com.marimon.excursions.ExcursionStatus;
-import com.marimon.excursions.impl.ExcursionCommand.*;
-import com.marimon.excursions.impl.ExcursionEvent.*;
+import com.marimon.excursions.impl.ExcursionCommand;
+import com.marimon.excursions.impl.ExcursionCommand.LoadExcursion;
+import com.marimon.excursions.impl.ExcursionCommand.ScheduleExcursion;
+import com.marimon.excursions.impl.writeside.ExcursionEvent.ExcursionScheduled;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 
 
 public class ExcursionEntity extends PersistentEntity<ExcursionCommand, ExcursionEvent, ExcursionState> {
@@ -45,7 +45,6 @@ public class ExcursionEntity extends PersistentEntity<ExcursionCommand, Excursio
     b.setEventHandlerChangingBehavior(ExcursionScheduled.class, evt ->
         scheduled(ExcursionState.create(evt)));
 
-
     return b.build();
   }
 
@@ -58,8 +57,9 @@ public class ExcursionEntity extends PersistentEntity<ExcursionCommand, Excursio
     return b.build();
   }
 
-  private void getItem(LoadExcursion cmd,
-                       ReadOnlyCommandContext<Optional<Excursion>> ctx) {
+  // ----------------------------------------------------------------------------------------------------
+
+  private void getItem(LoadExcursion cmd, ReadOnlyCommandContext<Optional<Excursion>> ctx) {
     ctx.reply(state().getExcursion());
   }
 

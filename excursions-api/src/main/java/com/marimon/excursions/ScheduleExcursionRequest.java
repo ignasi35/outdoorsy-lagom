@@ -2,16 +2,15 @@ package com.marimon.excursions;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.Data;
 
 @JsonDeserialize
-public final class ScheduleExcursion {
+public final class ScheduleExcursionRequest {
 
   private final String location;
   private final String isoDate;
 
   @JsonCreator
-  public ScheduleExcursion(String location, String isoDate){
+  public ScheduleExcursionRequest(String location, String isoDate){
     this.location = location;
     this.isoDate = isoDate;
   }
@@ -26,7 +25,7 @@ public final class ScheduleExcursion {
 
   @Override
   public String toString() {
-    return "ScheduleExcursion{" +
+    return "ScheduleExcursionRequest{" +
         "location='" + location + '\'' +
         ", isoDate='" + isoDate + '\'' +
         '}';
@@ -37,7 +36,7 @@ public final class ScheduleExcursion {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    ScheduleExcursion that = (ScheduleExcursion) o;
+    ScheduleExcursionRequest that = (ScheduleExcursionRequest) o;
 
     if (getLocation() != null ? !getLocation().equals(that.getLocation()) : that.getLocation() != null) return false;
     return getIsoDate() != null ? getIsoDate().equals(that.getIsoDate()) : that.getIsoDate() == null;

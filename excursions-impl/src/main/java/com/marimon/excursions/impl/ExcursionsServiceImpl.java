@@ -1,15 +1,22 @@
 package com.marimon.excursions.impl;
 
 
-import akka.Done;
 import akka.NotUsed;
 import akka.japi.Pair;
+import akka.stream.javadsl.Source;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.transport.MessageProtocol;
 import com.lightbend.lagom.javadsl.api.transport.ResponseHeader;
+import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
 import com.marimon.excursions.*;
+import com.marimon.excursions.impl.readside.ExcursionEventProcessor;
+import com.marimon.excursions.impl.readside.ExcursionReadOnlyRepository;
+import com.marimon.excursions.impl.writeside.ExcursionEntity;
+import org.pcollections.HashTreePMap;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -18,16 +25,24 @@ import java.util.concurrent.CompletableFuture;
 
 public class ExcursionsServiceImpl implements ExcursionsService {
   private final PersistentEntityRegistry persistentEntities;
+  private final ExcursionReadOnlyRepository repository;
 
   @Inject
-  public ExcursionsServiceImpl(PersistentEntityRegistry registry) {
+  public ExcursionsServiceImpl(
+      PersistentEntityRegistry registry,
+      ReadSide readSide,
+      ExcursionReadOnlyRepository repository) {
     this.persistentEntities = registry;
+    this.repository = repository;
+
+
     registry.register(ExcursionEntity.class);
+    readSide.register(ExcursionEventProcessor.class);
   }
 
 
   @Override
-  public HeaderServiceCall<ScheduleExcursion, ExcursionId> scheduleExcursion() {
+  public HeaderServiceCall<ScheduleExcursionRequest, ExcursionId> scheduleExcursion() {
     return (reqHeader, excursion) -> {
       UUID itemId = UUID.randomUUID();
       ExcursionCommand.ScheduleExcursion cmd =
@@ -35,16 +50,36 @@ public class ExcursionsServiceImpl implements ExcursionsService {
               excursion.getLocation(), excursion.getIsoDate());
       return entityRef(itemId)
           .ask(cmd)
-          .thenApply(id -> Pair.create(ResponseHeader.OK.withHeader("Location", " /api/excursions/" + id.getId()), id));
+          .thenApply(id -> {
+            ResponseHeader created = new ResponseHeader(201, new MessageProtocol(), HashTreePMap.empty());
+            return Pair.create(created.withHeader("Location", " /api/excursions/" + id.getId()), id);
+          });
     };
   }
 
   @Override
-  public ServiceCall<NotUsed, Optional<Excursion>> loadExcursion(String id) {
-    return request -> {
-      return entityRef(UUID.fromString(id)).ask(new ExcursionCommand.LoadExcursion());
-    };
+  public ServiceCall<NotUsed, Source<Excursion, ?>> loadExcursions() {
+    return request -> repository.loadAll();
   }
+
+  @Override
+  public HeaderServiceCall<NotUsed, Optional<Excursion>> loadExcursion(String id) {
+    // TODO: replace this error management with ExceptionHandler at service.
+    return (request, notused) ->
+        CompletableFuture
+            .supplyAsync(() -> UUID.fromString(id))
+            .thenCompose(itemId -> entityRef(itemId).ask(new ExcursionCommand.LoadExcursion()).thenApply(exc -> Pair.create(ResponseHeader.OK, (Optional<Excursion>) exc))
+            ).exceptionally(t -> {
+              int status;
+              if (t instanceof PersistentEntity.UnhandledCommandException)
+                status = 404;
+              else
+                status = 400;
+              return Pair.create(new ResponseHeader(status, new MessageProtocol(), HashTreePMap.empty()), Optional.<Excursion>empty());
+            }
+        );
+  }
+
 
   private PersistentEntityRef<ExcursionCommand> entityRef(UUID itemId) {
     return persistentEntities.refFor(ExcursionEntity.class, itemId.toString());
