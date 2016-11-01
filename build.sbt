@@ -8,9 +8,11 @@ lazy val excursionsApi = project("excursions-api")
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
+      lagomJavadslJackson,
       "org.projectlombok" % "lombok" % "1.16.10"
     )
   )
+
 
 lazy val excursionsImpl = project("excursions-impl")
   .enablePlugins(LagomJava)

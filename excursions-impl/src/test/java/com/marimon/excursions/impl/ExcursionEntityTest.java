@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -46,6 +47,7 @@ public class ExcursionEntityTest {
     assertEquals(location, outcome.state().getExcursion().get().getLocation());
     assertEquals(1, outcome.events().size());
 
+    assertEquals(Collections.emptyList(), outcome.issues());
   }
 
 }
