@@ -15,11 +15,6 @@ logs
 .sbtserver/
 .travis.yml
 LICENSE
-README.md
-hellostream-api/
-hellostream-impl/
-helloworld-api/
-helloworld-impl/
 libexec/
 project/.sbtserver
 project/.sbtserver.lock
