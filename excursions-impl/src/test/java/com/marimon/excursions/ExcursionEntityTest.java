@@ -1,12 +1,11 @@
-package com.marimon.excursions.impl;
+package com.marimon.excursions;
 
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver;
-import com.marimon.excursions.ExcursionStatus;
-import com.marimon.excursions.impl.writeside.ExcursionEvent;
-import com.marimon.excursions.impl.writeside.ExcursionEntity;
-import com.marimon.excursions.impl.writeside.ExcursionState;
+import com.marimon.excursions.writeside.ExcursionEvent;
+import com.marimon.excursions.writeside.ExcursionEntity;
+import com.marimon.excursions.writeside.ExcursionState;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,11 +1,10 @@
-package com.marimon.excursions.impl;
+package com.marimon.excursions;
 
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import com.lightbend.lagom.javadsl.api.transport.TransportException;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
-import com.marimon.excursions.*;
-import com.marimon.excursions.impl.readside.ExcursionReadWriteRepository;
+import com.marimon.excursions.readside.ExcursionReadWriteRepository;
 import org.junit.*;
 
 import java.util.List;

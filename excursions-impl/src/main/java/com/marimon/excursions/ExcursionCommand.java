@@ -1,12 +1,10 @@
-package com.marimon.excursions.impl;
+package com.marimon.excursions;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
-import com.marimon.excursions.Excursion;
-import com.marimon.excursions.ExcursionId;
 import lombok.Data;
 
 public interface ExcursionCommand extends Jsonable {

@@ -1,4 +1,4 @@
-package com.marimon.excursions.impl.readside;
+package com.marimon.excursions.readside;
 
 import akka.Done;
 import com.datastax.driver.core.BoundStatement;
@@ -8,20 +8,14 @@ import com.lightbend.lagom.javadsl.persistence.ReadSideProcessor;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 import com.marimon.excursions.Excursion;
-import com.marimon.excursions.impl.writeside.ExcursionEvent;
-import com.marimon.excursions.impl.writeside.ExcursionEvent.*;
-import org.joda.time.Days;
+import com.marimon.excursions.writeside.ExcursionEvent;
 import org.joda.time.LocalDate;
-import org.joda.time.MutableDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.pcollections.PSequence;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide.completedStatement;
 
@@ -47,7 +41,7 @@ public class ExcursionEventProcessor extends ReadSideProcessor<ExcursionEvent> {
     return readSide.<ExcursionEvent>builder("excursionOffset")
         .setGlobalPrepare(this::createTables)
         .setPrepare(tag -> this.prepareStatements())
-        .setEventHandler(ExcursionScheduled.class, e -> this.handleExcursionScheduled(e.getExcursion()))
+        .setEventHandler(ExcursionEvent.ExcursionScheduled.class, e -> this.handleExcursionScheduled(e.getExcursion()))
         .build();
   }
 

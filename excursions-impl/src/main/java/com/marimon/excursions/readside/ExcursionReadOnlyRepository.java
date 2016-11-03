@@ -1,8 +1,6 @@
-package com.marimon.excursions.impl.readside;
+package com.marimon.excursions.readside;
 
-import akka.Done;
 import akka.stream.javadsl.Source;
-import com.datastax.driver.core.Statement;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 import com.marimon.excursions.Excursion;
 import com.marimon.excursions.ExcursionStatus;

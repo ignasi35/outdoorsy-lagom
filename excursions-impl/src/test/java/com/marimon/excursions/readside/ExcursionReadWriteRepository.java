@@ -1,4 +1,4 @@
-package com.marimon.excursions.impl.readside;
+package com.marimon.excursions.readside;
 
 import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;

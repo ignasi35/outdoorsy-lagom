@@ -1,4 +1,4 @@
-package com.marimon.excursions.impl.writeside;
+package com.marimon.excursions.writeside;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;

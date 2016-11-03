@@ -1,4 +1,4 @@
-package com.marimon.excursions.impl;
+package com.marimon.excursions;
 
 
 import akka.NotUsed;
@@ -12,10 +12,9 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
-import com.marimon.excursions.*;
-import com.marimon.excursions.impl.readside.ExcursionEventProcessor;
-import com.marimon.excursions.impl.readside.ExcursionReadOnlyRepository;
-import com.marimon.excursions.impl.writeside.ExcursionEntity;
+import com.marimon.excursions.readside.ExcursionEventProcessor;
+import com.marimon.excursions.readside.ExcursionReadOnlyRepository;
+import com.marimon.excursions.writeside.ExcursionEntity;
 import org.pcollections.HashTreePMap;
 
 import javax.inject.Inject;
