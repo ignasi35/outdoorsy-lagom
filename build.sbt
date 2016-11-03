@@ -3,13 +3,15 @@ organization in ThisBuild := "com.marimon"
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.11.8"
 
+val lombok = "org.projectlombok" % "lombok" % "1.16.10"
+
 lazy val excursionsApi = project("excursions-api")
   .settings(
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lagomJavadslJackson,
-      "org.projectlombok" % "lombok" % "1.16.10"
+      lombok
     )
   )
 
@@ -26,6 +28,31 @@ lazy val excursionsImpl = project("excursions-impl")
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(excursionsApi)
+
+lazy val routesApi = project("routes-api")
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(
+      lagomJavadslApi,
+      lagomJavadslJackson,
+      lombok
+    )
+  )
+
+
+lazy val routesImpl = project("routes-impl")
+  .enablePlugins(LagomJava)
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(
+//      lagomJavadslPersistenceJdbc,
+      lagomJavadslPersistenceCassandra,
+      lagomJavadslTestKit,
+      lagomLogback
+    )
+  )
+  .settings(lagomForkedTestSettings: _*)
+  .dependsOn(routesApi)
 
 def project(id: String) = Project(id, base = file(id))
   .settings(eclipseSettings: _*)
