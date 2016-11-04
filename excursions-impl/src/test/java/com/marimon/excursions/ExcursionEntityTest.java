@@ -32,7 +32,7 @@ public class ExcursionEntityTest {
   }
 
   @Test
-  public void shouldProcessASchedulingCommand() {
+  public void shouldProcessAScheduleExcursionCommand() {
     UUID uuid = UUID.randomUUID();
     PersistentEntityTestDriver<ExcursionCommand, ExcursionEvent, ExcursionState> driver =
         new PersistentEntityTestDriver<>(system, new ExcursionEntity(), uuid.toString());
