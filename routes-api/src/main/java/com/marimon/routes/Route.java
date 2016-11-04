@@ -4,11 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Data;
 
-import java.util.Optional;
-
-/**
- *
- */
 @Data
 public class Route implements Jsonable {
 

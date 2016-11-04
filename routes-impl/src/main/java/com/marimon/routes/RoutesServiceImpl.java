@@ -8,12 +8,15 @@ import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.api.transport.ResponseHeader;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
 
 import com.marimon.routes.RouteCommand.*;
 import com.marimon.routes.impl.PRoute;
 import com.marimon.routes.impl.PTrack;
 import com.marimon.routes.impl.PWayPoint;
+import com.marimon.routes.readside.RouteEventProcessor;
+import com.marimon.routes.readside.RouteReadOnlyRepository;
 import org.pcollections.ConsPStack;
 import org.pcollections.HashTreePMap;
 import org.pcollections.PStack;
@@ -21,17 +24,20 @@ import org.pcollections.PStack;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 public class RoutesServiceImpl implements RoutesService {
 
   private final PersistentEntityRegistry entityRegistry;
+  private final RouteReadOnlyRepository repository;
 
   @Inject
-  public RoutesServiceImpl(PersistentEntityRegistry entityRegistry) {
+  public RoutesServiceImpl(PersistentEntityRegistry entityRegistry, ReadSide readSide, RouteReadOnlyRepository repository) {
     this.entityRegistry = entityRegistry;
+    this.repository = repository;
+
     entityRegistry.register(RoutesEntity.class);
+    readSide.register(RouteEventProcessor.class);
   }
 
   @Override
@@ -59,6 +65,12 @@ public class RoutesServiceImpl implements RoutesService {
                     throw new NotFound(id + " not found");
                 }
             );
+  }
+
+
+  @Override
+  public ServiceCall<NotUsed, PStack<RouteId>> loadRoutes() {
+    return request -> repository.loadAll();
   }
 
   // --------------------------------------------------------------------------------

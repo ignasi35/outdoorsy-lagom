@@ -1,34 +1,70 @@
 package com.marimon.routes;
 
+import com.lightbend.lagom.javadsl.testkit.ServiceTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pcollections.ConsPStack;
 import org.pcollections.PStack;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
-import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.startServer;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 
 public class RoutesServiceTest {
 
-  @Test
-  public void shouldStoreAndRetrieveARoute() {
-    withServer(defaultSetup().withCassandra(true), server -> {
-          RoutesService routesService = server.client(RoutesService.class);
+  private static ServiceTest.TestServer server;
 
-          PStack<WayPoint> waypoints = ConsPStack.from(
-              Arrays.asList(new WayPoint(-13.214208, -72.3810852), new WayPoint(-13.1639352, -72.5453277)));
-          Track track = new Track(waypoints);
-          Route r = new Route("Inca Trail", track);
-          RouteId routeId = routesService.reportRoute().invoke(r).toCompletableFuture().get(5, SECONDS);
-          Route route = routesService.loadRoute(routeId.getId().toString()).invoke().toCompletableFuture().get(5, SECONDS);
-
-          assertEquals(r, route);
-        }
-
+  @BeforeClass
+  public static void setUp() {
+    server = startServer(
+        defaultSetup().withCassandra(true).withCluster(true)
     );
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    if (server != null) {
+      server.stop();
+      server = null;
+    }
+  }
+
+  private PStack<WayPoint> waypoints = ConsPStack.from(Arrays.asList(new WayPoint(-13.214208, -72.3810852), new WayPoint(-13.1639352, -72.5453277)));
+  private Track track = new Track(waypoints);
+  private Route incaTrail = new Route("Inca Trail", track);
+
+  @Test
+  public void shouldStoreAndRetrieveARoute() throws InterruptedException, ExecutionException, TimeoutException {
+    RoutesService service = server.client(RoutesService.class);
+    RouteId routeId = reportRoute(service, incaTrail);
+    Route route = loadRoute(service, routeId);
+    assertEquals(incaTrail, route);
+  }
+
+
+  @Test
+  public void shouldStoreAndRetrieveManyRoutes() throws InterruptedException, ExecutionException, TimeoutException {
+    RoutesService routesService = server.client(RoutesService.class);
+    reportRoute(routesService, incaTrail);
+    reportRoute(routesService, incaTrail);
+    reportRoute(routesService, incaTrail);
+    PStack<RouteId> routes = routesService.loadRoutes().invoke().toCompletableFuture().get(5, SECONDS);
+    assertEquals(3, routes.size());
+  }
+
+  // ------------------------------------------------------------------------------------------------------
+  private Route loadRoute(RoutesService routesService, RouteId routeId) throws InterruptedException, ExecutionException, TimeoutException {
+    return routesService.loadRoute(routeId.getId().toString()).invoke().toCompletableFuture().get(5, SECONDS);
+  }
+
+  private RouteId reportRoute(RoutesService routesService, Route route) throws InterruptedException, ExecutionException, TimeoutException {
+    return routesService.reportRoute().invoke(incaTrail).toCompletableFuture().get(5, SECONDS);
   }
 
 }

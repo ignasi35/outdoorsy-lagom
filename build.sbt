@@ -45,8 +45,8 @@ lazy val routesImpl = project("routes-impl")
   .settings(
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(
-//      lagomJavadslPersistenceJdbc,
-      lagomJavadslPersistenceCassandra,
+      lagomJavadslPersistenceJdbc,
+//      lagomJavadslPersistenceCassandra,
       lagomJavadslTestKit,
       lagomLogback
     )
