@@ -9,9 +9,11 @@ import org.pcollections.PStack;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.eventually;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.startServer;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
@@ -23,7 +25,7 @@ public class RoutesServiceTest {
   @BeforeClass
   public static void setUp() {
     server = startServer(
-        defaultSetup().withCassandra(true).withCluster(true)
+        defaultSetup().withCassandra(true)
     );
   }
 
@@ -54,8 +56,10 @@ public class RoutesServiceTest {
     reportRoute(routesService, incaTrail);
     reportRoute(routesService, incaTrail);
     reportRoute(routesService, incaTrail);
-    PStack<RouteId> routes = routesService.loadRoutes().invoke().toCompletableFuture().get(5, SECONDS);
-    assertEquals(3, routes.size());
+    eventually(() -> {
+      PStack<RouteId> routes = routesService.loadRoutes().invoke().toCompletableFuture().get(5, SECONDS);
+      assertEquals(3, routes.size());
+    });
   }
 
   // ------------------------------------------------------------------------------------------------------
@@ -66,5 +70,39 @@ public class RoutesServiceTest {
   private RouteId reportRoute(RoutesService routesService, Route route) throws InterruptedException, ExecutionException, TimeoutException {
     return routesService.reportRoute().invoke(incaTrail).toCompletableFuture().get(5, SECONDS);
   }
+
+  // ------------------------------------------------------------------------------------------------------
+
+  @FunctionalInterface
+  protected interface ThrowingRunnable extends Runnable {
+    @Override
+    default void run() {
+      try {
+        runThrows();
+      } catch (final Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    void runThrows() throws Exception;
+  }
+
+  private void eventually(ThrowingRunnable block) {
+    int retries = 10;
+    while (retries > 0) {
+      try {
+        TimeUnit.MILLISECONDS.sleep(100);
+        block.runThrows();
+        return;
+      } catch (InterruptedException e) {
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      } catch (AssertionError ae) {
+        if (retries > 0) retries--;
+        else throw ae;
+      }
+    }
+  }
+
 
 }
