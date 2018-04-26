@@ -1,6 +1,7 @@
 package com.marimon.excursions;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
@@ -11,15 +12,14 @@ public interface ExcursionCommand extends Jsonable {
 
 
   @SuppressWarnings("serial")
-  @JsonDeserialize
   @Data
   public final class ScheduleExcursion
       implements ExcursionCommand,
-      CompressedJsonable,
       PersistentEntity.ReplyType<ExcursionId> {
     public final String location;
     public final String isoDate;
 
+    @JsonCreator
     public ScheduleExcursion(String location, String isoDate) {
       this.location = location;
       this.isoDate = isoDate;
